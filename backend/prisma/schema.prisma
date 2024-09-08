@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id Int @id @default(autoincrement())
+  name String
+  userId String @unique
+  password String
+  accessToken String?
+  refreshToken String?
+  createAt String
+  competition Competition[]
+  competitionSubmissions CompetitionSubmissions[]
+  PraticeSubmissions PraticeSubmissions[]
+}
+model Competition {
+  id Int @id @default(autoincrement())
+  User String
+  createAt String?
+  endAt String?
+  isDone Boolean @default(false)
+  createUser Users @relation(fields: [User], references: [userId])
+  problem CompetitionProblem[]
+}
+
+model CompetitionProblem {
+  id Int @id @default(autoincrement())
+  title String?
+  content String?
+  exinput String?
+  exoutput String?
+  room Int
+  RoomId Competition @relation(fields: [room], references: [id])
+  CompetitionSubmission CompetitionSubmissions[]
+}
+
+model problem {
+  id Int @id @default(autoincrement())
+  title String?
+  content String?
+  exinput String?
+  exoutput String?
+  PraticeSubmissions PraticeSubmissions[]
+}
+
+model CompetitionSubmissions {
+  id Int @id @default(autoincrement())
+  UserId String
+  problemId Int
+  code String?
+  result String?
+  solvedUser Users @relation(fields: [UserId], references: [userId])
+  solvedProblemId CompetitionProblem @relation(fields: [problemId], references: [id])
+}
+
+model PraticeSubmissions {
+    id Int @id @default(autoincrement())
+  UserId String
+  problemId Int
+  code String?
+  result String?
+  solvedUser Users @relation(fields: [UserId], references: [userId])
+  solvedProblemId problem @relation(fields: [problemId], references: [id])
+}
